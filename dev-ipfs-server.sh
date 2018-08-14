@@ -12,3 +12,21 @@ cd go-ipfs
 ipfs init
 ipfs config Addresses.API /ip4/0.0.0.0/tcp/64443
 ipfs config --json API.HTTPHeaders.Access-Control-Allow-Origin '["*"]'
+
+# Set up systemd daemon
+mkdir -p ~/.config/systemd/user/
+cat <<EOT >> ~/.config/systemd/user/ipfs.service
+[Unit]
+Description=IPFS daemon
+
+[Service]
+ExecStart=/usr/bin/ipfs daemon
+Restart=on-failure
+
+[Install]
+WantedBy=default.target
+EOT
+
+systemctl --user enable ipfs
+
+echo "Type 'systemctl --user start ipfs' to start the IPFS daemon on port 64443"
