@@ -4,7 +4,7 @@
 # Installs and set up IPFS development server on port 64443
 #
 
-export IPFS_PATH=/path/to/ipfsrepo
+export IPFS_PATH=/mnt/disks/ipfs-data
 wget https://dist.ipfs.io/go-ipfs/v0.4.17/go-ipfs_v0.4.17_linux-amd64.tar.gz
 tar xvfz go-ipfs_v0.4.17_linux-amd64.tar.gz
 cd go-ipfs
@@ -14,19 +14,22 @@ ipfs config Addresses.API /ip4/0.0.0.0/tcp/64443
 ipfs config --json API.HTTPHeaders.Access-Control-Allow-Origin '["*"]'
 
 # Set up systemd daemon
-mkdir -p ~/.config/systemd/user/
-cat <<EOT >> ~/.config/systemd/user/ipfs.service
+cat <<EOT >> /etc/systemd/system/ipfs.service
 [Unit]
-Description=IPFS daemon
+Description=IPFS Daemon
+After=syslog.target network.target remote-fs.target nss-lookup.target
 
 [Service]
-ExecStart=/usr/bin/ipfs daemon
-Restart=on-failure
+Type=simple
+Environment=IPFS_PATH=/mnt/disks/ipfs-data
+ExecStart=/usr/local/bin/ipfs daemon --enable-namesys-pubsub
+User=mathew_corm
 
 [Install]
-WantedBy=default.target
+WantedBy=multi-user.target
 EOT
 
-systemctl --user enable ipfs
+systemctl daemon-reload
+systemctl enable ipfs
 
-echo "Type 'systemctl --user start ipfs' to start the IPFS daemon on port 64443"
+echo "Type 'sudo systemctl start ipfs' to start the IPFS daemon on port 64443"
