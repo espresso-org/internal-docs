@@ -22,7 +22,7 @@ wget https://dist.ipfs.io/go-ipfs/v0.4.17/go-ipfs_v0.4.17_linux-amd64.tar.gz
 tar xvfz go-ipfs_v0.4.17_linux-amd64.tar.gz
 cd go-ipfs
 ./install.sh
-ipfs init
+ipfs init --profile server
 ipfs config Addresses.API /ip4/0.0.0.0/tcp/$1
 ipfs config --json API.HTTPHeaders.Access-Control-Allow-Origin '["*"]'
 
